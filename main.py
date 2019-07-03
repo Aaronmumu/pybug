@@ -92,7 +92,7 @@ def kwItemd(keyword, page):
 
     url = "https://www.amazon.cn/s?i=apparel&rh=n%3A2016156051%2Cn%3A2016157051%2Cn%3A2152155051&page="+ page +"&qid=" + ts + "&ref=sr_pg_" + page
     response = req(url)
-    time.sleep(2)
+    # time.sleep(2)
     soup = BeautifulSoup(response, "lxml")
 
     #rank = soup.find_all()
@@ -101,11 +101,26 @@ def kwItemd(keyword, page):
     #csvWrite(name='kwItem&AsinRank', data=[url, keyword])
     #print('根据class_查询节点：', soup.find_all(id='container'))
 
-    list = soup.select('#container #mainResults ul .a-spacing-mini a.s-access-detail-page')
-    csvWrite(name='kwItem&AsinRank', data=[url])
-    for li in list:
-        print(li['href'], li['title'])
-        csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
+    if page == '1':
+        list = soup.select('#container #mainResults ul .a-spacing-mini a.s-access-detail-page')
+        # csvWrite(name='kwItem&AsinRank', data=[url])
+        for li in list:
+            # print(li['href'], li['title'])
+            csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
+    else:
+        list = soup.select('#a-page #search a.a-text-normal span.a-text-normal')
+        for li in list:
+            link = 'https://www.amazon.cn' + li.parent['href']
+            # print(link, li.string)
+            response = req(link)
+            # print('url', link)
+            soup = BeautifulSoup(response, "lxml")
+            start = soup.select('#a-page #dp #ppd #acrPopover span a span.a-icon-alt')
+            # print('stay', start)
+
+
+            # print(li['href'], li['title'])
+            # csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
 
     #print('根据class_查询节点：', soup.select('#container #mainResults ul .a-spacing-mini a.s-access-detail-page'))
 
@@ -125,4 +140,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
