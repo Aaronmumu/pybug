@@ -41,7 +41,7 @@ search = [
 SITE = "http://www.amazon.co.jp"
 Apartment = "aps"
 # 设置查询的页码数
-Pages = 2
+Pages = 2000
 # 设置要查询的关键词
 KEYWORD = [
     "switch",
@@ -97,28 +97,32 @@ def kwItemd(keyword, page):
 
     #rank = soup.find_all()
 
-
     #csvWrite(name='kwItem&AsinRank', data=[url, keyword])
     #print('根据class_查询节点：', soup.find_all(id='container'))
 
     if page == '1':
         list = soup.select('#container #mainResults ul .a-spacing-mini a.s-access-detail-page')
-        # csvWrite(name='kwItem&AsinRank', data=[url])
-        for li in list:
-            # print(li['href'], li['title'])
-            csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
+        # # csvWrite(name='kwItem&AsinRank', data=[url])
+        # for li in list:
+        #     # print(li['href'], li['title'])
+        #     csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
     else:
+        csvWrite(name='link', data=[page, url])
         list = soup.select('#a-page #search a.a-text-normal span.a-text-normal')
         for li in list:
             link = 'https://www.amazon.cn' + li.parent['href']
             # print(link, li.string)
             response = req(link)
-            # print('url', link)
+            print('url', link)
             soup = BeautifulSoup(response, "lxml")
             start = soup.select('#a-page #dp #ppd #acrPopover span a span.a-icon-alt')
-            # print('stay', start)
-
-
+            start = start[0].string if len(start) > 0 else '无'
+            commt = soup.select('#centerCol span#acrCustomerReviewText')
+            commt = commt[0].string if len(commt) > 0 else '无'
+            money = soup.select('#price span.priceBlockBuyingPriceString')
+            money = money[0].string if len(money) > 0 else '无'
+            print('stay', start, commt, money)
+            csvWrite(name='boy', data=[li.string, start, commt, money, link])
             # print(li['href'], li['title'])
             # csvWrite(name='kwItem&AsinRank', data=[li['href'], li['title']])
 
